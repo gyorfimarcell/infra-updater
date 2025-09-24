@@ -1,0 +1,29 @@
+name: Build and publish Docker image
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          docker build -t ghcr.io/${{ github.repository_owner }}/infra-updater:$TAG -t ghcr.io/${{ github.repository_owner }}/infra-updater:latest .
+
+      - name: Push Docker image
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push ghcr.io/${{ github.repository_owner }}/infra-updater:$TAG
+          docker push ghcr.io/${{ github.repository_owner }}/infra-updater:latest
