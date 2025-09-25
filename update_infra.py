@@ -122,6 +122,8 @@ def update_infra():
             "compose",
             "-f",
             settings.competitors_compose_path,
+            "-p",
+            settings.docker_project_name,
             "up",
             "-d",
         ]

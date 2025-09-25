@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     gitea_token: str = ""
     competitors_compose_path: str = "./competitors.yml"
     webhook_secret: str = "secret"
+    docker_project_name: str = "infra"
 
     model_config = SettingsConfigDict(env_file=".env")
 
