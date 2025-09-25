@@ -1,5 +1,6 @@
 from settings import settings
 import requests
+from requests.auth import HTTPBasicAuth
 import yaml
 import subprocess
 
@@ -41,9 +42,9 @@ def update_infra():
         r = requests.get(
             f"https://git.{base_domain}/api/v1/user/repos",
             headers={
-                "Authorization": f"token {settings.gitea_token}",
                 "Sudo": competitor,
             },
+            auth=HTTPBasicAuth(root_username, root_password),
         )
         data = r.json()
 
@@ -59,9 +60,9 @@ def update_infra():
         r = requests.get(
             f"https://git.{base_domain}/api/v1/packages/{competitor}",
             headers={
-                "Authorization": f"token {settings.gitea_token}",
                 "Sudo": competitor,
             },
+            auth=HTTPBasicAuth(root_username, root_password),
         )
         data = r.json()
 
