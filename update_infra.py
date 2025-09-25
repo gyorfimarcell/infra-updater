@@ -20,7 +20,7 @@ def update_infra():
         competitors = [x.split(" ")[0] for x in lines[5:]]
 
     # Docker login
-    print("Logging itno docker")
+    print("Logging into docker")
     subprocess.run(
         [
             "docker",

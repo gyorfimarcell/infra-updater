@@ -2,7 +2,7 @@ FROM ghcr.io/astral-sh/uv:python3.13-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache docker-cli
+RUN apk add --no-cache docker-cli docker-cli-compose
 
 # Enable bytecode compilation
 ENV UV_COMPILE_BYTECODE=1
