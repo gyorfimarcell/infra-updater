@@ -19,10 +19,19 @@ def update_infra():
         root_password = lines[3]
         competitors = [x.split(" ")[0] for x in lines[5:]]
 
-    print(base_domain)
-    print(root_username)
-    print(root_password)
-    print(competitors)
+    # Docker login
+    print("Logging itno docker")
+    subprocess.run(
+        [
+            "docker",
+            "login",
+            "-u",
+            root_username,
+            "-p",
+            root_password,
+            f"git.{base_domain}",
+        ]
+    )
 
     # Fetch competitor repos
     repos = []
