@@ -47,9 +47,10 @@ def update_infra():
             auth=HTTPBasicAuth(root_username, root_password),
         )
         data = r.json()
+        filtered = [x for x in data if data["owner"]["username"] == competitor]
 
         print(f"Found {len(data)} repos from {competitor}")
-        repos = repos + data
+        repos = repos + filtered
     print(f"Found {len(repos)} repos in total")
 
     # Fetch packages
