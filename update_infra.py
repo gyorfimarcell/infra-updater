@@ -109,7 +109,7 @@ def update_infra():
                 for x in repos
             },
             "routers": {
-                {get_container_name(x)}: {
+                get_container_name(x): {
                     "rule": f"Host(`{get_container_name(x)}.{base_domain}`)",
                     "entryPoints": ["websecure"],
                     "middlewares": [f"sablier-{get_container_name(x)}@file"],
@@ -119,7 +119,7 @@ def update_infra():
                 for x in repos
             },
             "services": {
-                {get_container_name(x)}: {
+                get_container_name(x): {
                     "loadBalancer": {"servers": [f"http://{get_container_name(x)}:80"]}
                 }
                 for x in repos
