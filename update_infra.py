@@ -102,7 +102,7 @@ def update_infra():
                         "sablier": {
                             "group": get_container_name(x),
                             "dynamic": {"displayName": get_container_name(x)},
-                            "sablierUrl": "http://sablier:1000",
+                            "sablierUrl": "http://sablier:10000",
                         }
                     }
                 }
