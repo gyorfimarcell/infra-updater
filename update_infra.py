@@ -120,7 +120,9 @@ def update_infra():
             },
             "services": {
                 get_container_name(x): {
-                    "loadBalancer": {"servers": [f"http://{get_container_name(x)}:80"]}
+                    "loadBalancer": {
+                        "servers": [{"url": f"http://{get_container_name(x)}:80"}]
+                    }
                 }
                 for x in repos
             },
