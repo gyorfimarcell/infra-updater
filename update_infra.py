@@ -80,11 +80,8 @@ def update_infra():
                 "restart": "always",
                 "networks": ["gitea"],
                 "labels": [
-                    "traefik.enable=true",
-                    f"traefik.http.routers.{get_container_name(x)}.rule=Host(`{get_container_name(x)}.{base_domain}`)",
-                    f"traefik.http.routers.{get_container_name(x)}.entrypoints=websecure",
-                    f"traefik.http.routers.{get_container_name(x)}.tls=true",
-                    f"traefik.http.services.{get_container_name(x)}.loadbalancer.server.port=80",
+                    "sablier.enable=true",
+                    f"sablier.group={get_container_name(x)}"
                     "com.centurylinklabs.watchtower.enable=true",
                 ],
             }
@@ -94,6 +91,43 @@ def update_infra():
     }
     with open(settings.competitors_compose_path, "w", encoding="utf8") as file:
         yaml.dump(compose, file, sort_keys=False)
+
+    # Write Traefik dynamic config
+    print("Writing traefik dynamic config")
+    traefik_config = {
+        "http": {
+            "middlewares": {
+                f"sablier-${get_container_name(x)}": {
+                    "plugin": {
+                        "sablier": {
+                            "group": get_container_name(x),
+                            "dynamic": {"displayName": get_container_name(x)},
+                            "sablierUrl": "http://sablier:1000",
+                        }
+                    }
+                }
+                for x in repos
+            },
+            "routers": {
+                {get_container_name(x)}: {
+                    "rule": f"Host(`{get_container_name(x)}.{base_domain}`)",
+                    "entryPoints": ["websecure"],
+                    "middlewares": [f"sablier-{get_container_name(x)}@file"],
+                    "tls": True,
+                    "service": get_container_name(x),
+                }
+                for x in repos
+            },
+            "services": {
+                {get_container_name(x)}: {
+                    "loadBalancer": {"servers": [f"http://{get_container_name(x)}:80"]}
+                }
+                for x in repos
+            },
+        }
+    }
+    with open(settings.competitors_compose_path, "w", encoding="utf8") as file:
+        yaml.dump(traefik_config, file, sort_keys=False)
 
     # Push empty containers
     print("Pushing initial containers")
@@ -126,7 +160,6 @@ def update_infra():
             settings.competitors_compose_path,
             "-p",
             settings.docker_project_name,
-            "up",
-            "-d",
+            "create",
         ]
     )
