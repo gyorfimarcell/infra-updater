@@ -81,7 +81,7 @@ def update_infra():
                 "networks": ["gitea"],
                 "labels": [
                     "sablier.enable=true",
-                    f"sablier.group={get_container_name(x)}"
+                    f"sablier.group={get_container_name(x)}",
                     "com.centurylinklabs.watchtower.enable=true",
                 ],
             }
