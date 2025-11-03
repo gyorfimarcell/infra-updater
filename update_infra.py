@@ -97,7 +97,7 @@ def update_infra():
     traefik_config = {
         "http": {
             "middlewares": {
-                f"sablier-${get_container_name(x)}": {
+                f"sablier-{get_container_name(x)}": {
                     "plugin": {
                         "sablier": {
                             "group": get_container_name(x),
@@ -126,7 +126,7 @@ def update_infra():
             },
         }
     }
-    with open(settings.competitors_compose_path, "w", encoding="utf8") as file:
+    with open(settings.traefik_config_path, "w", encoding="utf8") as file:
         yaml.dump(traefik_config, file, sort_keys=False)
 
     # Push empty containers
