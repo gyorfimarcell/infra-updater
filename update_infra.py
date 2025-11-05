@@ -134,10 +134,12 @@ def update_infra():
     # Push empty containers
     print("Pushing initial containers")
     for repo in repos:
-        container_name = f"git.{base_domain}/{repo['owner']['username']}/{repo['name']}"
+        container_name = (
+            f"git.{base_domain}/{repo['owner']['username']}/{repo['name']}".lower()
+        )
 
         competitor_packages = packages[repo["owner"]["username"]]
-        if any(x["name"] == repo["name"] for x in competitor_packages):
+        if any(x["name"] == repo["name"].lower() for x in competitor_packages):
             print(f"Package {container_name} already exists")
             continue
 
