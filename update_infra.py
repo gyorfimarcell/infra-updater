@@ -75,7 +75,7 @@ def update_infra():
     compose = {
         "services": {
             get_container_name(x): {
-                "image": f"git.{base_domain}/{x['owner']['username']}/{x['name']}:latest",
+                "image": f"git.{base_domain}/{x['owner']['username']}/{x['name']}:latest".lower(),
                 "container_name": get_container_name(x),
                 "restart": "always",
                 "networks": ["gitea"],
