@@ -3,6 +3,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 import yaml
 import subprocess
+import time
 
 
 def get_container_name(repo):
@@ -153,6 +154,9 @@ def update_infra():
             ]
         )
         subprocess.run(["docker", "push", container_name])
+
+    # Give time for Gitea to update the docker manifest
+    time.sleep(5)
 
     # Restart docker containers
     print("Restarting docker containers")
