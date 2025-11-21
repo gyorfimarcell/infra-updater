@@ -35,6 +35,15 @@ def update_infra():
         ]
     )
 
+    print("Downloading nginx:latest")
+        subprocess.run(
+            [
+                "docker",
+                "pull",
+                "nginx:latest"
+            ]
+        )
+
     # Fetch competitor repos
     repos = []
     for competitor in competitors:
