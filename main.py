@@ -1,7 +1,7 @@
 import hashlib
 import hmac
 
-from fastapi import FastAPI, Header, HTTPException, Request, status
+from fastapi import BackgroundTasks, FastAPI, Header, HTTPException, Request, status
 
 from settings import settings
 from update_infra import update_infra
@@ -10,7 +10,11 @@ app = FastAPI()
 
 
 @app.post("/update")
-async def update(request: Request, x_gitea_signature: str = Header(None)):
+async def update(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    x_gitea_signature: str = Header(None),
+):
     body = await request.body()
 
     if not x_gitea_signature:
@@ -28,6 +32,6 @@ async def update(request: Request, x_gitea_signature: str = Header(None)):
             status_code=status.HTTP_403_FORBIDDEN, detail="Invalid signature"
         )
 
-    update_infra()
+    background_tasks.add_task(update_infra)
 
-    return "Done"
+    return "Accepted"
