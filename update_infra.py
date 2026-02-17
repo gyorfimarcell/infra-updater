@@ -36,13 +36,7 @@ def update_infra():
     )
 
     print("Downloading nginx:latest")
-    subprocess.run(
-        [
-            "docker",
-            "pull",
-            "nginx:latest"
-        ]
-    )
+    subprocess.run(["docker", "pull", "nginx:latest"])
 
     # Fetch competitor repos
     repos = []
@@ -54,6 +48,7 @@ def update_infra():
             headers={
                 "Sudo": competitor,
             },
+            params={"limit": 9999},
             auth=HTTPBasicAuth(root_username, root_password),
         )
         data = r.json()
@@ -73,6 +68,7 @@ def update_infra():
             headers={
                 "Sudo": competitor,
             },
+            params={"limit": 9999},
             auth=HTTPBasicAuth(root_username, root_password),
         )
         data = r.json()
