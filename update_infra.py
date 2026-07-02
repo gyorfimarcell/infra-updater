@@ -41,6 +41,8 @@ def get_paginated(url, headers, params, auth, page_size=50):
         parsed = urlparse(next_url)
         params["page"] = int(parse_qs(parsed.query).get("page", [1])[0])
 
+    return all_data
+
 
 def update_infra():
     # Read main config file
