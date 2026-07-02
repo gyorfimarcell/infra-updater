@@ -1,3 +1,6 @@
+import re
+from urllib.parse import urlparse, parse_qs
+
 from settings import settings
 import requests
 from requests.auth import HTTPBasicAuth
@@ -8,6 +11,35 @@ import time
 
 def get_container_name(repo):
     return f"{repo['owner']['username']}_{repo['name']}"
+
+
+def get_paginated(url, headers, params, auth, page_size=50):
+    all_data = []
+    params = {**params, "limit": page_size, "page": 1}
+
+    while True:
+        r = requests.get(url, headers=headers, params=params, auth=auth)
+        r.raise_for_status()
+        data = r.json()
+        all_data.extend(data)
+
+        link_header = r.headers.get("Link", "")
+        if not link_header:
+            break
+
+        next_url = None
+        for part in link_header.split(","):
+            if 'rel="next"' in part:
+                match = re.search(r"<([^>]+)>", part)
+                if match:
+                    next_url = match.group(1)
+                break
+
+        if not next_url:
+            break
+
+        parsed = urlparse(next_url)
+        params["page"] = int(parse_qs(parsed.query).get("page", [1])[0])
 
 
 def update_infra():
@@ -43,15 +75,12 @@ def update_infra():
     for competitor in competitors:
         print(f"Getting repos for competitor {competitor}")
 
-        r = requests.get(
+        data = get_paginated(
             f"https://git.{base_domain}/api/v1/user/repos",
-            headers={
-                "Sudo": competitor,
-            },
-            params={"limit": 9999},
+            headers={"Sudo": competitor},
+            params={},
             auth=HTTPBasicAuth(root_username, root_password),
         )
-        data = r.json()
         filtered = [x for x in data if x["owner"]["username"] == competitor]
 
         print(f"Found {len(data)} repos from {competitor}")
@@ -63,15 +92,12 @@ def update_infra():
     for competitor in competitors:
         print(f"Getting packages for competitor {competitor}")
 
-        r = requests.get(
+        data = get_paginated(
             f"https://git.{base_domain}/api/v1/packages/{competitor}",
-            headers={
-                "Sudo": competitor,
-            },
-            params={"limit": 9999},
+            headers={"Sudo": competitor},
+            params={},
             auth=HTTPBasicAuth(root_username, root_password),
         )
-        data = r.json()
 
         print(f"Found {len(data)} packages from {competitor}")
         packages[competitor] = data
